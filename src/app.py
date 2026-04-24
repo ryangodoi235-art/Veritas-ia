@@ -1,60 +1,81 @@
 import streamlit as st
 import joblib
 
-# Configuração da página
+# Configuração
 st.set_page_config(
-    page_title="Veritas-IA",
-    page_icon="📰",
-    layout="centered"
+    page_title="Veritas-IA Premium",
+    page_icon="🧠",
+    layout="wide"
 )
 
 # Carregar modelo
 model = joblib.load("model/model.pkl")
 vectorizer = joblib.load("model/vectorizer.pkl")
 
-# Título
-st.title("📰 Veritas-IA")
-st.subheader("Sistema Inteligente de Detecção de Fake News")
+# Sidebar
+with st.sidebar:
+    st.title("📌 Sobre o Projeto")
+    st.write("""
+    **Veritas-IA** é um sistema inteligente capaz de analisar textos jornalísticos e identificar possíveis fake news utilizando:
 
-st.markdown("---")
+    - Machine Learning
+    - NLP
+    - Classificação de Texto
+    - Python
+    """)
 
-# Caixa de texto
-texto = st.text_area(
-    "Cole uma notícia abaixo para análise:",
-    height=220
-)
+    st.write("---")
+    st.caption("Projeto Integrador GTI")
 
-# Botão
-if st.button("🔍 Analisar Notícia"):
+# Título principal
+st.title("🧠 Veritas-IA Premium")
+st.subheader("Detector Inteligente de Notícias Falsas")
+
+st.write("Cole uma notícia abaixo e clique em analisar.")
+
+texto = st.text_area("", height=250)
+
+if st.button("🚀 Analisar Agora"):
 
     if texto.strip() == "":
-        st.warning("Digite uma notícia primeiro.")
+        st.warning("Digite um texto para análise.")
     else:
         texto_vec = vectorizer.transform([texto])
 
         resultado = model.predict(texto_vec)[0]
         prob = model.predict_proba(texto_vec).max()
 
-        st.markdown("---")
+        st.write("---")
 
-        if resultado == 0:
-            st.error(f"⚠️ Possível Fake News")
-        else:
-            st.success(f"✅ Notícia Provavelmente Verdadeira")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if resultado == 0:
+                st.error("⚠️ Possível Fake News")
+            else:
+                st.success("✅ Notícia Confiável")
+
+        with col2:
+            st.metric("Confiança da IA", f"{prob:.2%}")
 
         st.progress(float(prob))
 
-        st.info(f"Confiança da IA: {prob:.2%}")
+        st.write("### 🧾 Análise")
 
-        # Explicação automática
         if resultado == 0:
-            st.write(
-                "A IA identificou padrões textuais comuns em notícias falsas, como linguagem exagerada ou estrutura suspeita."
-            )
+            st.info("""
+            O sistema encontrou padrões frequentemente associados a notícias falsas:
+            - Linguagem apelativa
+            - Estrutura suspeita
+            - Sensacionalismo textual
+            """)
         else:
-            st.write(
-                "A IA identificou padrões compatíveis com notícias confiáveis e estrutura textual consistente."
-            )
+            st.info("""
+            O sistema encontrou padrões compatíveis com notícias confiáveis:
+            - Estrutura formal
+            - Linguagem informativa
+            - Texto consistente
+            """)
 
-st.markdown("---")
-st.caption("Projeto acadêmico desenvolvido com Machine Learning e NLP.")
+st.write("---")
+st.caption("Desenvolvido com Python • Streamlit • Scikit-learn")
